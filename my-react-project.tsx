@@ -1,7 +1,7 @@
 interface FormofList {
     text : string,
     id : number,
-    isDone : boolean
+    isDone : boolean 
 }
 
 interface Childprops {
