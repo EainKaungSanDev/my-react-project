@@ -1,68 +1,66 @@
+import {useState,KeyboardEvent,ChangeEvent} from "react"
+
 interface FormofList {
     text : string,
     id : number,
-    isDone : boolean
+    completed : boolean
 }
 
-interface Childprops {
-    item : FormofList,
-    onDelete : (id:number) => void,
-    onToggle : (id:number) => void 
-}
+const TodoList = () => {
 
-import {useState,ChangeEvent,KeyboardEvent} from "react"
+type FilterStatus = "all" | "completed" | "active"
 
-const Parent = () => {
+const [list,setList] = useState<FormofList[]>([]);
 
-const [input,setInput] = useState<string>("")
+const [input,setInput] = useState<string>("");
 
-const [array,setArray] = useState<FormofList[]>([])
+const [filter,setFilter] = useState<FilterStatus>("all");
 
-const Change = (e:ChangeEvent<HTMLInputElement>): void => {
+const Change = (e:ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value)
 }
 
-const Keyboard = (e:KeyboardEvent<HTMLInputElement>): void => {
+const KeyDown = (e:KeyboardEvent<HTMLInputElement>) => {
     if(e.key === "Enter" && input.trim() !== ""){
-        const newList: FormofList = {
-            text : input,
-            id : Date.now(),
-            isDone : false
-        }
-        setArray(prev=> [...prev,newList])
-        setInput("")
+   const newList: FormofList = {
+       text : input,
+       id : Date.now(),
+       completed : false
+   }
+   setList(prev => [...prev,newList])
+   
+   setInput("")
+   
     }
 }
 
-const Delete = (id:number): void => {
-    setArray(prev => prev.filter(item => item.id !== id))
+const Toggle = (id:number): void => {
+    setList(prev => prev.map(item => item.id === id? {...item,completed : !item.completed}: item))
 }
 
-const Toggle = (id:number): void => {
-    setArray(prev => prev.map(item => item.id === id? {...item,isDone : !item.isDone} : item))
-}
+const filteredList = list.filter(item => {
+    if(filter === "active")
+    return !item.completed
+    if(filter === "completed")
+    return item.completed
+    return true
+})
 
     return(
         <div>
-            <input type="text" placeholder="List" value={input} onChange={Change} onKeyDown={Keyboard}/>
+            <input type="text" placeholder="To do list" value={input} onChange={Change} onKeyDown={KeyDown}/>
+            <h1>To do List</h1>
+            
+            <div>
+      <button onClick={()=>setFilter("active")}>Active</button>
+      <button onClick={()=>setFilter("completed")}>Completed</button>
+      <button onClick={()=>setFilter("all")}>All</button>
+            </div>
             <ul>
-                {array.map(item => <Child 
-          key={item.id}
-          item={item} 
-          onDelete={Delete} 
-          onToggle={Toggle}/>)}
+                {filteredList.map(item => (
+                    <li key={item.id} onClick={()=>Toggle(item.id)} style={{textDecoration : item.completed? "line-through" : "none"}}>{item.text}</li>
+                ))}
             </ul>
         </div>
     )
 }
-
-const Child = ({item,onDelete,onToggle}:Childprops) => {
-    return(
-        <li onClick={()=>onToggle(item.id)} style={{textDecoration : item.isDone? "line-through" : "none",listStyle : "none"}}>{item.text} <button onClick={(e)=>{
-      e.stopPropagation();
-      onDelete(item.id)      
-        }}>Delete</button></li>
-    )
-}
-
-export default Parent
