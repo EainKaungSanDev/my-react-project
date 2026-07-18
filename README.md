@@ -1,4 +1,4 @@
-React TypeScript Todo List
+<b>React TypeScript Todo List</b>
 
 <table>
   <tr>
