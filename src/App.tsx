@@ -15,7 +15,7 @@ interface ChildProps {
     edit : number | null
 }
 
-const App = () => {
+const Parent = () => {
 
 const [input,setInput] = useState<string>("")
 
@@ -110,4 +110,4 @@ Del
     )
 }
 
-export default App
+export default Parent
